@@ -3,6 +3,7 @@ import { fastifySwagger } from '@fastify/swagger'
 import { fastifySwaggerUi } from '@fastify/swagger-ui'
 import { fastify } from 'fastify'
 import { ZodError } from 'zod'
+
 import { env } from '@/env'
 
 export const app = fastify()
@@ -11,7 +12,7 @@ app.register(fastifyCors, { origin: '*' })
 app.register(fastifySwagger, {
 	openapi: {
 		info: {
-			title: 'Upload Server',
+			title: 'Brevly Server',
 			version: '1.0.0',
 		},
 	},
