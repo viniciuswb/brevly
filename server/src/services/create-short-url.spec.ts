@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 
 import { InMemoryUrlsRepository } from '@/repositories/in-memory/in-memory-urls-repository'
 import { CreateShortUrlService } from './create-short-url'
+import { ShortUrlAlreadyExistsError } from './errors/short-url-already-exists-error'
 
 describe('createShortUrl', () => {
 	let urlsRepository: InMemoryUrlsRepository
@@ -53,6 +54,6 @@ describe('createShortUrl', () => {
 				originalUrl: 'https://different.com',
 				shortUrl: 'http://localhost:3333/existing',
 			})
-		).rejects.toThrow()
+		).rejects.toThrowError(ShortUrlAlreadyExistsError)
 	})
 })

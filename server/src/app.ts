@@ -2,11 +2,21 @@ import { fastifyCors } from '@fastify/cors'
 import { fastifySwagger } from '@fastify/swagger'
 import { fastifySwaggerUi } from '@fastify/swagger-ui'
 import { fastify } from 'fastify'
+import {
+	jsonSchemaTransform,
+	serializerCompiler,
+	validatorCompiler,
+	type ZodTypeProvider,
+} from 'fastify-type-provider-zod'
 import { ZodError } from 'zod'
 
 import { env } from '@/env'
+import { urlsRoutes } from './http/controllers/urls/routes'
 
-export const app = fastify()
+export const app = fastify().withTypeProvider<ZodTypeProvider>()
+
+app.setValidatorCompiler(validatorCompiler)
+app.setSerializerCompiler(serializerCompiler)
 
 app.register(fastifyCors, { origin: '*' })
 app.register(fastifySwagger, {
@@ -16,15 +26,14 @@ app.register(fastifySwagger, {
 			version: '1.0.0',
 		},
 	},
+	transform: jsonSchemaTransform,
 })
 
 app.register(fastifySwaggerUi, {
 	routePrefix: '/docs',
 })
 
-app.get('/', async () => {
-	return { hello: 'world' }
-})
+app.register(urlsRoutes)
 
 app.setErrorHandler((error, _request, reply) => {
 	if (error instanceof ZodError) {
