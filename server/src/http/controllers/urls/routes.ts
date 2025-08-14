@@ -1,6 +1,7 @@
 import type { FastifyInstance } from 'fastify'
 
-import { createUrlSchema, create as urlController } from './create'
+import { createUrlSchema, create as createUrlController } from './create'
+import { getUrl, getUrlSchema } from './get-url'
 
 export async function urlsRoutes(app: FastifyInstance) {
 	app.post(
@@ -8,6 +9,14 @@ export async function urlsRoutes(app: FastifyInstance) {
 		{
 			schema: createUrlSchema,
 		},
-		urlController
+		createUrlController,
+	)
+
+	app.get(
+		'/r/:shortUrl',
+		{
+			schema: getUrlSchema,
+		},
+		getUrl,
 	)
 }
