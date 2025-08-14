@@ -10,18 +10,20 @@ export default defineConfig({
 				extends: true,
 				test: {
 					name: 'unit',
-					dir: 'src/services',
+					include: ['**/*.spec.ts'],
+					exclude: ['**/http/**'],
 				},
 			},
-			// {
-			// 	extends: true,
-			// 	test: {
-			// 		name: 'e2e',
-			// 		dir: 'src/http',
-			// 		environment:
-			// 			'./prisma/vitest-environment-prisma/prisma-test-environment.ts',
-			// 	},
-			// },
+			{
+				extends: true,
+				test: {
+					name: 'e2e',
+					include: ['**/*.spec.ts'],
+					exclude: ['**/services/**'],
+					environment:
+						'./src/db/vitest-environment/drizzle-test-environment.ts',
+				},
+			},
 		],
 		coverage: {
 			exclude: ['build/**', 'coverage/**', 'node_modules/**'],
