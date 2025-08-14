@@ -20,7 +20,7 @@ describe('Get URL (e2e)', () => {
 
 		const response = await app.inject({
 			method: 'GET',
-			url: '/r/http://short.com/example',
+			url: `/r/${encodeURIComponent('http://short.com/example')}`,
 		})
 
 		expect(response.statusCode).toBe(301)
@@ -30,7 +30,7 @@ describe('Get URL (e2e)', () => {
 	it('should not be able to get a non-existing url', async () => {
 		const response = await app.inject({
 			method: 'GET',
-			url: '/r/http://short.com/non-existing',
+			url: `/r/${encodeURIComponent('http://short.com/non-existing')}`,
 		})
 
 		expect(response.statusCode).toBe(404)
