@@ -1,15 +1,15 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 
 import { InMemoryUrlsRepository } from '@/repositories/in-memory/in-memory-urls-repository'
-import { CreateShortUrl } from './create-short-url'
+import { CreateShortUrlService } from './create-short-url'
 
 describe('createShortUrl', () => {
 	let urlsRepository: InMemoryUrlsRepository
-	let sut: CreateShortUrl
+	let sut: CreateShortUrlService
 
 	beforeEach(() => {
 		urlsRepository = new InMemoryUrlsRepository()
-		sut = new CreateShortUrl(urlsRepository)
+		sut = new CreateShortUrlService(urlsRepository)
 	})
 
 	it('should create a short URL', async () => {

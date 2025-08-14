@@ -3,7 +3,7 @@ import { z } from 'zod'
 import type { NewUrl, Url } from '@/db/types'
 import type { UrlsRepository } from '@/repositories/urls-repository'
 
-export class CreateShortUrl {
+export class CreateShortUrlService {
 	constructor(private readonly urlsRepository: UrlsRepository) {}
 
 	async execute({ originalUrl, shortUrl }: NewUrl): Promise<Url> {
