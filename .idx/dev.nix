@@ -6,6 +6,7 @@
 
   # Use https://search.nixos.org/packages to find packages
   packages = [
+    pkgs.docker-compose
     # pkgs.corepack_20
     # pkgs.go
     # pkgs.python311

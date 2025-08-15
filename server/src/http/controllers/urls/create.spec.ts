@@ -15,32 +15,24 @@ describe('Create a shortUrl (e2e)', () => {
 	it('should be able to create a shortUrl', async () => {
 		const response = await request(app.server).post('/urls').send({
 			originalUrl: 'https://google.com',
-			shortUrl: 'http://localhost:3333/google',
+			shortUrl: 'google',
 		})
 
 		expect(response.statusCode).toBe(201)
-		expect(response.body).toEqual({
-			id: expect.any(String),
-			shortUrl: expect.any(String),
-			originalUrl: expect.any(String),
-			clickCount: expect.any(Number),
-			createdAt: expect.any(String),
-		})
+		expect(response.body.shortUrl).toEqual('http://localhost:3333/google')
 	})
 
 	it('should return 409 when shortUrl already exists', async () => {
-		const urlData = {
-			originalUrl: 'https://example.com',
-			shortUrl: 'http://localhost:3333/duplicate',
-		}
-
 		// Create first URL
-		await request(app.server).post('/urls').send(urlData)
+		await request(app.server).post('/urls').send({
+			originalUrl: 'https://example.com',
+			shortUrl: 'duplicate-url',
+		})
 
 		// Try to create same shortUrl again
 		const response = await request(app.server).post('/urls').send({
 			originalUrl: 'https://different.com',
-			shortUrl: 'http://localhost:3333/duplicate',
+			shortUrl: 'duplicate-url',
 		})
 
 		expect(response.statusCode).toBe(409)
@@ -52,7 +44,7 @@ describe('Create a shortUrl (e2e)', () => {
 	it('should return 400 for invalid originalUrl', async () => {
 		const response = await request(app.server).post('/urls').send({
 			originalUrl: 'invalid-url',
-			shortUrl: 'http://localhost:3333/test',
+			shortUrl: 'test-short-url',
 		})
 
 		expect(response.statusCode).toBe(400)
@@ -61,7 +53,7 @@ describe('Create a shortUrl (e2e)', () => {
 	it('should return 400 for invalid shortUrl', async () => {
 		const response = await request(app.server).post('/urls').send({
 			originalUrl: 'https://valid.com',
-			shortUrl: 'invalid-url',
+			shortUrl: 'invalid short url',
 		})
 
 		expect(response.statusCode).toBe(400)
@@ -70,16 +62,18 @@ describe('Create a shortUrl (e2e)', () => {
 	it('should persist URL data to database', async () => {
 		const urlData = {
 			originalUrl: 'https://persistence-test.com',
-			shortUrl: 'http://localhost:3333/persist',
+			shortUrl: 'persist-short-url',
 		}
 
 		const response = await request(app.server).post('/urls').send(urlData)
 
 		expect(response.statusCode).toBe(201)
-		
-		// Verify the data matches what we sent
+
+		// Verify the data matches what we sent, with slug converted to full URL
 		expect(response.body.originalUrl).toBe(urlData.originalUrl)
-		expect(response.body.shortUrl).toBe(urlData.shortUrl)
+		expect(response.body.shortUrl).toBe(
+			`http://localhost:3333/${urlData.shortUrl}`
+		)
 		expect(response.body.clickCount).toBe(0)
 		expect(response.body.id).toBeDefined()
 		expect(new Date(response.body.createdAt)).toBeInstanceOf(Date)
