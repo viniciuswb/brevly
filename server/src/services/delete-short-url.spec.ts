@@ -31,8 +31,6 @@ describe('DeleteShortUrlService', () => {
 	it('should not be able to delete a non-existing short url', async () => {
 		const slug = 'test-slug'
 
-		await expect(sut.execute({ slug })).rejects.toBeInstanceOf(
-			UrlNotFoundError,
-		)
+		await expect(sut.execute({ slug })).rejects.toBeInstanceOf(UrlNotFoundError)
 	})
 })
