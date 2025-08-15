@@ -20,9 +20,7 @@ export class GetUrlService {
 
 		await this.urlsRepository.incrementClickCount(shortUrl)
 
-		return {
-			...url,
-			clickCount: url.clickCount + 1,
-		}
+		const updatedUrl = await this.urlsRepository.findByShortUrl(shortUrl)
+		return updatedUrl!
 	}
 }
