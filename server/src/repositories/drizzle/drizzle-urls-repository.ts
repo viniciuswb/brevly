@@ -1,4 +1,4 @@
-import { eq, sql } from 'drizzle-orm'
+import { eq, sql, asc } from 'drizzle-orm'
 import { uuidv7 } from 'uuidv7'
 
 import { db } from '@/db'
@@ -35,6 +35,21 @@ export class DrizzleUrlsRepository implements UrlsRepository {
 			.limit(1)
 
 		return url[0] || null
+	}
+
+	async findAll(): Promise<Url[]> {
+		const urls = await db
+			.select({
+				id: schema.urls.id,
+				originalUrl: schema.urls.originalUrl,
+				shortUrl: schema.urls.shortUrl,
+				clickCount: schema.urls.clickCount,
+				createdAt: schema.urls.createdAt,
+			})
+			.from(schema.urls)
+			.orderBy(asc(schema.urls.createdAt))
+
+		return urls
 	}
 
 	async incrementClickCount(shortUrl: string): Promise<void> {
