@@ -25,7 +25,9 @@ export class InMemoryUrlsRepository implements UrlsRepository {
 	}
 
 	async findAll(): Promise<Url[]> {
-		return [...this.items].sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+		return [...this.items].sort(
+			(a, b) => a.createdAt.getTime() - b.createdAt.getTime()
+		)
 	}
 
 	async incrementClickCount(shortUrl: string): Promise<void> {

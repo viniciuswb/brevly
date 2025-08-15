@@ -35,7 +35,9 @@ describe('List URLs Service', () => {
 		expect(urls).toHaveLength(2)
 		expect(urls[0].originalUrl).toBe('https://www.example.com')
 		expect(urls[1].originalUrl).toBe('https://www.google.com')
-		expect(urls[0].createdAt.getTime()).toBeLessThanOrEqual(urls[1].createdAt.getTime())
+		expect(urls[0].createdAt.getTime()).toBeLessThanOrEqual(
+			urls[1].createdAt.getTime()
+		)
 	})
 
 	it('should include all URL properties', async () => {

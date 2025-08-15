@@ -1,4 +1,4 @@
-import { eq, sql, asc } from 'drizzle-orm'
+import { asc, eq, sql } from 'drizzle-orm'
 import { uuidv7 } from 'uuidv7'
 
 import { db } from '@/db'
