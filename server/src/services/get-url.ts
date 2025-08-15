@@ -21,6 +21,9 @@ export class GetUrlService {
 		await this.urlsRepository.incrementClickCount(shortUrl)
 
 		const updatedUrl = await this.urlsRepository.findByShortUrl(shortUrl)
-		return updatedUrl!
+		if (!updatedUrl) {
+			throw new UrlNotFoundError()
+		}
+		return updatedUrl
 	}
 }
