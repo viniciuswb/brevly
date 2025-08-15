@@ -25,7 +25,7 @@ describe('Export URLs CSV Service', () => {
 	it('should be able to create an instance', async () => {
 		const { ExportUrlsCsvService } = await import('./export-urls-csv')
 		const sut = new ExportUrlsCsvService(urlsRepository)
-		
+
 		expect(sut).toBeInstanceOf(ExportUrlsCsvService)
 	})
 
@@ -42,7 +42,7 @@ describe('Export URLs CSV Service', () => {
 		// Mock S3 client send method
 		const mockSend = vi.fn().mockResolvedValue({})
 		const mockS3Client = { send: mockSend }
-		
+
 		// Replace S3 client instance
 		Object.defineProperty(sut, 's3Client', {
 			value: mockS3Client,
@@ -74,12 +74,12 @@ describe('Export URLs CSV Service', () => {
 
 		// Mock S3 client send method
 		let uploadedData: Buffer | null = null
-		const mockSend = vi.fn().mockImplementation((command) => {
+		const mockSend = vi.fn().mockImplementation(command => {
 			uploadedData = command.Body
 			return Promise.resolve({})
 		})
 		const mockS3Client = { send: mockSend }
-		
+
 		// Replace S3 client instance
 		Object.defineProperty(sut, 's3Client', {
 			value: mockS3Client,
@@ -89,13 +89,17 @@ describe('Export URLs CSV Service', () => {
 		const result = await sut.execute()
 
 		expect(result.downloadUrl).toContain('https://cdn.example.com/urls-export-')
-		expect(result.filename).toMatch(/^urls-export-\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3}Z-[a-f0-9]+\.csv$/)
+		expect(result.filename).toMatch(
+			/^urls-export-\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3}Z-[a-f0-9]+\.csv$/
+		)
 		expect(mockSend).toHaveBeenCalledTimes(1)
 
 		// Verify CSV content
 		if (uploadedData) {
 			const csvContent = (uploadedData as Buffer).toString()
-			expect(csvContent).toContain('ID,Original URL,Short URL,Click Count,Created At')
+			expect(csvContent).toContain(
+				'ID,Original URL,Short URL,Click Count,Created At'
+			)
 			expect(csvContent).toContain(url1.id)
 			expect(csvContent).toContain(url2.id)
 			expect(csvContent).toContain('https://www.example.com')

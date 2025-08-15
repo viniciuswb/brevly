@@ -34,6 +34,8 @@ export async function exportCsv(_request: FastifyRequest, reply: FastifyReply) {
 			})
 		}
 
-		throw error
+		return reply.status(500).send({
+			message: 'Internal server error',
+		})
 	}
 }
