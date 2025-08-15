@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import { uuidv7 } from 'uuidv7'
 
 import { db } from '@/db'
@@ -35,5 +35,12 @@ export class DrizzleUrlsRepository implements UrlsRepository {
 			.limit(1)
 
 		return url[0] || null
+	}
+
+	async incrementClickCount(shortUrl: string): Promise<void> {
+		await db
+			.update(schema.urls)
+			.set({ clickCount: sql`${schema.urls.clickCount} + 1` })
+			.where(eq(schema.urls.shortUrl, shortUrl))
 	}
 }
