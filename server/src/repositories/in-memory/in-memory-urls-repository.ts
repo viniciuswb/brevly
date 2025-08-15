@@ -2,6 +2,7 @@ import { uuidv7 } from 'uuidv7'
 
 import type { NewUrl, Url } from '@/db/types'
 import type { UrlsRepository } from '../urls-repository'
+import { Readable } from 'stream'
 
 export class InMemoryUrlsRepository implements UrlsRepository {
 	public items: Url[] = []
@@ -42,5 +43,9 @@ export class InMemoryUrlsRepository implements UrlsRepository {
 		if (index !== -1) {
 			this.items.splice(index, 1)
 		}
+	}
+
+	async stream(): Promise<Readable> {
+		return Readable.from(this.items)
 	}
 }
