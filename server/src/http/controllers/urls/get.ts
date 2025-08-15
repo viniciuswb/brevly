@@ -6,23 +6,22 @@ import { makeGetUrlService } from '@/services/factories/make-get-url-service'
 
 export const getUrlSchema = {
 	tags: ['URLs'],
-	summary: 'Get original URL from short URL',
-	description: 'Retrieve the original URL using the shortened version',
+	summary: 'Redirect to original URL from short URL',
+	description: 'Redirect to the original URL using the shortened version',
 	params: z.object({
 		shortUrl: z.string().describe('The short URL slug to look up'),
 	}),
 	response: {
-		200: z.object({
-			id: z.uuid().describe('Unique identifier for the URL mapping'),
-			originalUrl: z.string().describe('The original URL'),
-			shortUrl: z.string().describe('The short URL'),
-			clickCount: z
-				.number()
-				.int()
-				.min(0)
-				.describe('Number of times the short URL has been accessed'),
-			createdAt: z.date().describe('When the URL mapping was created'),
-		}),
+		302: {
+			description: 'Redirect to original URL',
+			type: 'null',
+			headers: {
+				location: {
+					type: 'string',
+					description: 'The original URL to redirect to',
+				},
+			},
+		},
 		404: z
 			.object({
 				message: z.string().describe('Error message'),
@@ -38,9 +37,7 @@ export async function get(request: FastifyRequest, reply: FastifyReply) {
 	try {
 		const url = await getUrlService.execute({ shortUrl })
 
-		return reply.status(200).send({
-			...url,
-		})
+		return reply.redirect(url.originalUrl, 302)
 	} catch (error) {
 		if (error instanceof UrlNotFoundError) {
 			return reply.status(404).send({

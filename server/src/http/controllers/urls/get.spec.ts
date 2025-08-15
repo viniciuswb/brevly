@@ -12,7 +12,7 @@ describe('Get URL (e2e)', () => {
 		await app.close()
 	})
 
-	it('should be able to get a URL', async () => {
+	it('should redirect to the original URL', async () => {
 		const createResponse = await request(app.server)
 			.post('/urls')
 			.send({
@@ -25,15 +25,9 @@ describe('Get URL (e2e)', () => {
 
 		const getResponse = await request(app.server)
 			.get('/urls/example')
-			.expect(200)
+			.expect(302)
 
-		expect(getResponse.body).toEqual({
-			id: expect.any(String),
-			originalUrl: 'https://www.example.com',
-			shortUrl: expect.stringContaining('/example'),
-			clickCount: 1,
-			createdAt: expect.any(String),
-		})
+		expect(getResponse.headers.location).toEqual('https://www.example.com')
 	})
 
 	it('should return 404 when URL does not exist', async () => {
@@ -57,14 +51,14 @@ describe('Get URL (e2e)', () => {
 
 		const firstResponse = await request(app.server)
 			.get('/urls/google')
-			.expect(200)
+			.expect(302)
 
-		expect(firstResponse.body.clickCount).toEqual(1)
+		expect(firstResponse.headers.location).toEqual('https://www.google.com')
 
 		const secondResponse = await request(app.server)
 			.get('/urls/google')
-			.expect(200)
+			.expect(302)
 
-		expect(secondResponse.body.clickCount).toEqual(2)
+		expect(secondResponse.headers.location).toEqual('https://www.google.com')
 	})
 })
