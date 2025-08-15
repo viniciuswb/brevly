@@ -11,7 +11,7 @@ function generateTestDatabaseURL(schemaName: string) {
 	}
 
 	const url = new URL(process.env.DATABASE_URL)
-	
+
 	// Create a unique database name for this test run
 	const originalPath = url.pathname
 	const dbName = originalPath.slice(1) // Remove leading slash
@@ -38,7 +38,9 @@ export default (<Environment>{
 
 		try {
 			// Create test database
-			await mainDb.execute(`CREATE DATABASE ${JSON.stringify(`brevly_test_${schemaName}`)}`)
+			await mainDb.execute(
+				`CREATE DATABASE ${JSON.stringify(`brevly_test_${schemaName}`)}`
+			)
 		} catch {
 			// Database might already exist, that's ok
 		}
@@ -54,7 +56,10 @@ export default (<Environment>{
 		return {
 			async teardown() {
 				// Connect to main database to drop test database
-				const originalDatabaseURL = process.env.DATABASE_URL?.replace(`_test_${schemaName}`, '')
+				const originalDatabaseURL = process.env.DATABASE_URL?.replace(
+					`_test_${schemaName}`,
+					''
+				)
 				if (!originalDatabaseURL) {
 					console.warn('Could not determine original database URL for cleanup')
 					return
@@ -71,12 +76,14 @@ export default (<Environment>{
 						WHERE datname = '${`brevly_test_${schemaName}`}'
 						AND pid <> pg_backend_pid()
 					`)
-					
+
 					// Small delay to ensure connections are terminated
 					await new Promise(resolve => setTimeout(resolve, 100))
-					
+
 					// Now drop the database
-					await cleanupDb.execute(`DROP DATABASE IF EXISTS ${JSON.stringify(`brevly_test_${schemaName}`)}`)
+					await cleanupDb.execute(
+						`DROP DATABASE IF EXISTS ${JSON.stringify(`brevly_test_${schemaName}`)}`
+					)
 				} catch (error) {
 					console.warn('Failed to cleanup test database:', error)
 				}
