@@ -43,4 +43,8 @@ export class DrizzleUrlsRepository implements UrlsRepository {
 			.set({ clickCount: sql`${schema.urls.clickCount} + 1` })
 			.where(eq(schema.urls.shortUrl, shortUrl))
 	}
+
+	async delete(shortUrl: string): Promise<void> {
+		await db.delete(schema.urls).where(eq(schema.urls.shortUrl, shortUrl))
+	}
 }

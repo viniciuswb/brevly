@@ -4,4 +4,5 @@ export interface UrlsRepository {
 	create(data: NewUrl): Promise<Url>
 	findByShortUrl(shortUrl: string): Promise<Url | null>
 	incrementClickCount(shortUrl: string): Promise<void>
+	delete(shortUrl: string): Promise<void>
 }

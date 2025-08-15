@@ -30,4 +30,11 @@ export class InMemoryUrlsRepository implements UrlsRepository {
 			url.clickCount += 1
 		}
 	}
+
+	async delete(shortUrl: string): Promise<void> {
+		const index = this.items.findIndex(item => item.shortUrl === shortUrl)
+		if (index !== -1) {
+			this.items.splice(index, 1)
+		}
+	}
 }
