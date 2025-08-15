@@ -36,6 +36,12 @@ app.register(fastifySwaggerUi, {
 app.register(urlsRoutes)
 
 app.setErrorHandler((error, _request, reply) => {
+	if (error.validation) {
+		return reply.status(400).send({
+			message: `Validation error: ${error.message}`,
+			errors: error.validation,
+		});
+	}
 	if (error instanceof ZodError) {
 		return reply
 			.status(400)

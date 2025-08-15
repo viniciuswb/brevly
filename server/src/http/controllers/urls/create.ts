@@ -10,10 +10,11 @@ export const createUrlSchema = {
 	summary: "Create a short URL",
 	description: "Create a new short URL mapping",
 	body: z.object({
-		originalUrl: z
+		originalUrl: z.string().url().describe("The original URL to be shortened"),
+		shortUrl: z
 			.string()
-			.describe("The original URL to be shortened"),
-		shortUrl: z.string().describe("The short URL"),
+			.regex(/^[a-z0-9-]+$/)
+			.describe("The slug for the short URL (e.g., 'google')"),
 	}),
 	response: {
 		201: z.object({
@@ -41,12 +42,10 @@ export const createUrlSchema = {
 };
 
 export async function create(request: FastifyRequest, reply: FastifyReply) {
-	const createShortUrlSchema = z.object({
-		originalUrl: z.string(),
-		shortUrl: z.string(),
-	});
-
-	const { originalUrl, shortUrl } = createShortUrlSchema.parse(request.body);
+	const { originalUrl, shortUrl } = request.body as {
+		originalUrl: string;
+		shortUrl: string;
+	};
 
 	const createShortUrlService = makeCreateShortUrlService();
 
