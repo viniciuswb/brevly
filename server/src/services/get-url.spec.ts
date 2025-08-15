@@ -14,7 +14,7 @@ describe('getUrl', () => {
 	})
 
 	it('should get a URL and increment click count', async () => {
-		const createdUrl = await urlsRepository.create({
+		await urlsRepository.create({
 			originalUrl: 'https://www.example.com',
 			shortUrl: 'http://localhost:3333/example',
 		})
