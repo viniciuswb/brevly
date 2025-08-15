@@ -6,7 +6,7 @@
 	"scripts": {
 		"start:dev": "tsx watch --env-file .env src/server.ts",
 		"test": "dotenv -e .env.test -- vitest run src/services",
-		"test:e2e": "dotenv -e .env vitest run src/http",
+		"test:e2e": "dotenv -e .env.test vitest run src/http",
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
 		"db:migrate:test": "dotenv -e .env.test -- drizzle-kit migrate",
