@@ -10,5 +10,22 @@ services:
     volumes:
       - pg_data:/bitnami/postgresql
 
+  server:
+    build: .
+    ports:
+      - "3333:3333"
+    environment:
+      - PORT=3333
+      - NODE_ENV=production
+      - DATABASE_URL=postgres://docker:docker@pg:5432/brevly
+      - BASE_SHORT_URL=http://localhost:3333
+      - CLOUDFLARE_ACCOUNT_ID=${CLOUDFLARE_ACCOUNT_ID}
+      - CLOUDFLARE_ACCESS_KEY_ID=${CLOUDFLARE_ACCESS_KEY_ID}
+      - CLOUDFLARE_SECRET_ACCESS_KEY=${CLOUDFLARE_SECRET_ACCESS_KEY}
+      - CLOUDFLARE_BUCKET=${CLOUDFLARE_BUCKET}
+      - CLOUDFLARE_PUBLIC_URL=${CLOUDFLARE_PUBLIC_URL}
+    depends_on:
+      - pg
+
 volumes:
   pg_data:
