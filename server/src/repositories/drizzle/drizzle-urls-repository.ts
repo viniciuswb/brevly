@@ -1,3 +1,4 @@
+import { Readable } from 'node:stream'
 import { asc, eq, sql } from 'drizzle-orm'
 import { uuidv7 } from 'uuidv7'
 
@@ -57,6 +58,54 @@ export class DrizzleUrlsRepository implements UrlsRepository {
 			.update(schema.urls)
 			.set({ clickCount: sql`${schema.urls.clickCount} + 1` })
 			.where(eq(schema.urls.shortUrl, shortUrl))
+	}
+
+	async stream(): Promise<Readable> {
+		const batchSize = 100
+		let offset = 0
+		let hasMore = true
+
+		return new Readable({
+			objectMode: true,
+			async read() {
+				if (!hasMore) {
+					this.push(null)
+					return
+				}
+
+				try {
+					const batch = await db
+						.select({
+							id: schema.urls.id,
+							originalUrl: schema.urls.originalUrl,
+							shortUrl: schema.urls.shortUrl,
+							clickCount: schema.urls.clickCount,
+							createdAt: schema.urls.createdAt,
+						})
+						.from(schema.urls)
+						.orderBy(asc(schema.urls.createdAt))
+						.limit(batchSize)
+						.offset(offset)
+
+					if (batch.length === 0) {
+						hasMore = false
+						this.push(null)
+						return
+					}
+
+					for (const url of batch) {
+						this.push(url)
+					}
+
+					offset += batchSize
+					if (batch.length < batchSize) {
+						hasMore = false
+					}
+				} catch (error) {
+					this.emit('error', error)
+				}
+			},
+		})
 	}
 
 	async delete(shortUrl: string): Promise<void> {

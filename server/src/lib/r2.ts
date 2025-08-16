@@ -1,4 +1,5 @@
 import type { Readable } from 'node:stream'
+
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 
 import { env } from '@/env'
@@ -23,11 +24,19 @@ export async function uploadToR2(
 
 	const bucket = env.CLOUDFLARE_BUCKET
 
+	// Convert stream to buffer to get content length
+	const chunks: Buffer[] = []
+	for await (const chunk of fileStream) {
+		chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk))
+	}
+	const buffer = Buffer.concat(chunks)
+
 	const command = new PutObjectCommand({
 		Bucket: bucket,
 		Key: filename,
-		Body: fileStream,
+		Body: buffer,
 		ContentType: contentType,
+		ContentLength: buffer.length,
 	})
 
 	await s3.send(command)
