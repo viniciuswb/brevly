@@ -1,13 +1,14 @@
 import type { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
+
 import { makeExportUrlsService } from '@/services/factories/make-export-urls-service'
 
 export const exportUrlsSchema = {
 	summary: 'Export all URLs to a CSV file',
-	tags: ['urls'],
+	tags: ['URLs'],
 	response: {
 		201: z.object({
-			url: z.string().url(),
+			url: z.url(),
 		}),
 	},
 }

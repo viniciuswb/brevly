@@ -32,7 +32,7 @@ export async function urlsRoutes(app: FastifyInstance) {
 	)
 
 	app.get(
-		'/urls/:shortUrl',
+		'/:shortUrl',
 		{
 			schema: getUrlSchema,
 		},
