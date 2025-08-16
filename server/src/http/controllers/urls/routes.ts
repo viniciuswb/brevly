@@ -1,7 +1,8 @@
 import type { FastifyInstance } from 'fastify'
 
-import { createUrlSchema, create as urlController } from './create'
+import { create as createUrlController, createUrlSchema } from './create'
 import { del as deleteUrlController, deleteUrlSchema } from './delete'
+import { exportUrls as exportUrlController, exportUrlsSchema } from './export'
 import { get as getUrlController, getUrlSchema } from './get'
 import { list as listUrlsController, listUrlsSchema } from './list'
 
@@ -14,16 +15,24 @@ export async function urlsRoutes(app: FastifyInstance) {
 		listUrlsController
 	)
 
+	app.get(
+		'/urls/export',
+		{
+			schema: exportUrlsSchema,
+		},
+		exportUrlController
+	)
+
 	app.post(
 		'/urls',
 		{
 			schema: createUrlSchema,
 		},
-		urlController
+		createUrlController
 	)
 
 	app.get(
-		'/urls/:shortUrl',
+		'/:shortUrl',
 		{
 			schema: getUrlSchema,
 		},

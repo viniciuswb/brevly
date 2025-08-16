@@ -12,16 +12,6 @@ export const getUrlSchema = {
 		shortUrl: z.string().describe('The short URL slug to look up'),
 	}),
 	response: {
-		302: {
-			description: 'Redirect to original URL',
-			type: 'null',
-			headers: {
-				location: {
-					type: 'string',
-					description: 'The original URL to redirect to',
-				},
-			},
-		},
 		404: z
 			.object({
 				message: z.string().describe('Error message'),

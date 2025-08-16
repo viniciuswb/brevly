@@ -1,3 +1,4 @@
+import { Readable } from 'node:stream'
 import { uuidv7 } from 'uuidv7'
 
 import type { NewUrl, Url } from '@/db/types'
@@ -42,5 +43,16 @@ export class InMemoryUrlsRepository implements UrlsRepository {
 		if (index !== -1) {
 			this.items.splice(index, 1)
 		}
+	}
+
+	async stream(): Promise<Readable> {
+		const readable = new Readable({ objectMode: true, read: () => {} })
+
+		for (const item of this.items) {
+			readable.push(item)
+		}
+		readable.push(null)
+
+		return readable
 	}
 }

@@ -23,17 +23,13 @@ describe('Get URL (e2e)', () => {
 
 		expect(createResponse.body.clickCount).toEqual(0)
 
-		const getResponse = await request(app.server)
-			.get('/urls/example')
-			.expect(302)
+		const getResponse = await request(app.server).get('/example').expect(302)
 
 		expect(getResponse.headers.location).toEqual('https://www.example.com')
 	})
 
 	it('should return 404 when URL does not exist', async () => {
-		const response = await request(app.server)
-			.get('/urls/nonexistent')
-			.expect(404)
+		const response = await request(app.server).get('/nonexistent').expect(404)
 
 		expect(response.body).toEqual({
 			message: 'URL not found',
@@ -49,15 +45,11 @@ describe('Get URL (e2e)', () => {
 			})
 			.expect(201)
 
-		const firstResponse = await request(app.server)
-			.get('/urls/google')
-			.expect(302)
+		const firstResponse = await request(app.server).get('/google').expect(302)
 
 		expect(firstResponse.headers.location).toEqual('https://www.google.com')
 
-		const secondResponse = await request(app.server)
-			.get('/urls/google')
-			.expect(302)
+		const secondResponse = await request(app.server).get('/google').expect(302)
 
 		expect(secondResponse.headers.location).toEqual('https://www.google.com')
 	})

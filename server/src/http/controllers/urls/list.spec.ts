@@ -82,7 +82,7 @@ describe('List URLs (e2e)', () => {
 			.expect(201)
 
 		// Access the URL to increment click count
-		await request(app.server).get('/urls/test').expect(302)
+		await request(app.server).get('/test').expect(302)
 
 		// List URLs and check click count
 		const listResponse = await request(app.server).get('/urls').expect(200)
