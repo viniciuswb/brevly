@@ -1,13 +1,15 @@
 import { useState } from 'react';
+import { Toaster, toast } from 'react-hot-toast';
 import { LinkList } from './link-list';
 import { Logo } from './logo';
 import { NewLinkForm } from './new-link-form';
+import { api } from '../lib/api';
 
 interface Link {
   id: string;
   shortUrl: string;
   originalUrl: string;
-  accessCount: number;
+  clickCount: number;
 }
 
 interface BrevlyAppProps {
@@ -20,25 +22,25 @@ const sampleLinks: Link[] = [
     id: '1',
     shortUrl: 'brev.ly/Portfolio-Dev',
     originalUrl: 'devsite.portfolio.com.br/devname-123456',
-    accessCount: 30
+    clickCount: 30
   },
   {
     id: '2',
     shortUrl: 'brev.ly/Linkedin-Profile',
     originalUrl: 'linkedin.com/in/myprofile',
-    accessCount: 15
+    clickCount: 15
   },
   {
     id: '3',
     shortUrl: 'brev.ly/Github-Project',
     originalUrl: 'github.com/devname/project-name-v2',
-    accessCount: 34
+    clickCount: 34
   },
   {
     id: '4',
     shortUrl: 'brev.ly/Figma-Encurtador-de-Links',
     originalUrl: 'figma.com/design/file/Encurtador-de-Links',
-    accessCount: 53
+    clickCount: 53
   }
 ];
 
@@ -51,18 +53,21 @@ export function BrevlyApp({ initialLinks, withSampleData = true }: BrevlyAppProp
 
   const [links, setLinks] = useState<Link[]>(getInitialLinks());
 
-  const handleSubmitLink = async (originalUrl: string, customShort?: string) => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const newLink: Link = {
-      id: Date.now().toString(),
-      shortUrl: customShort || `brev.ly/${Date.now()}`,
-      originalUrl,
-      accessCount: 0
-    };
-    
-    setLinks(prev => [newLink, ...prev]);
+  const handleSubmitLink = async (originalUrl: string, shortUrl?: string) => {
+    try {
+      const response = await api.post('/urls', {
+        originalUrl,
+        shortUrl,
+      });
+
+      const newLink = response.data;
+      setLinks(prev => [newLink, ...prev]);
+      toast.success('Link created successfully!');
+    } catch (error: any) {
+      const message = error.response?.data?.message || 'Failed to create link';
+      toast.error(message);
+      throw error;
+    }
   };
 
   const handleCopyLink = (shortUrl: string) => {
@@ -77,7 +82,7 @@ export function BrevlyApp({ initialLinks, withSampleData = true }: BrevlyAppProp
   const handleExportCsv = () => {
     const csvContent = [
       ['Short URL', 'Original URL', 'Access Count'],
-      ...links.map(link => [link.shortUrl, link.originalUrl, link.accessCount.toString()])
+      ...links.map(link => [link.shortUrl, link.originalUrl, link.clickCount.toString()])
     ]
       .map(row => row.join(','))
       .join('\n');
@@ -93,6 +98,7 @@ export function BrevlyApp({ initialLinks, withSampleData = true }: BrevlyAppProp
 
   return (
     <div className="min-h-screen bg-[#E4E6EC] p-4 md:p-8 flex flex-col justify-center">
+      <Toaster />
       <div className="max-w-7xl mx-auto w-full">
         {/* Logo - positioned separately on desktop */}
         <div className="flex justify-center lg:hidden mb-8">

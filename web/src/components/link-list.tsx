@@ -6,7 +6,7 @@ interface Link {
   id: string;
   shortUrl: string;
   originalUrl: string;
-  accessCount: number;
+  clickCount: number;
 }
 
 interface LinkListProps {
@@ -74,7 +74,7 @@ export function LinkList({
                 <LinkItem
                   shortUrl={link.shortUrl}
                   originalUrl={link.originalUrl}
-                  accessCount={link.accessCount}
+                  accessCount={link.clickCount}
                   onCopy={onCopyLink}
                   onDelete={onDeleteLink}
                 />

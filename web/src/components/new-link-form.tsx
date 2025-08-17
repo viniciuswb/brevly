@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button, Input } from './ui';
 
 interface NewLinkFormProps {
-  onSubmit?: (originalUrl: string, shortUrl: string) => void;
+  onSubmit?: (originalUrl: string, shortUrl: string) => Promise<void>;
   className?: string;
 }
 
@@ -18,6 +18,8 @@ export function NewLinkForm({ onSubmit, className }: NewLinkFormProps) {
     setIsLoading(true);
     try {
       await onSubmit?.(originalUrl, shortUrl);
+      setOriginalUrl('');
+      setShortUrl('');
     } finally {
       setIsLoading(false);
     }
