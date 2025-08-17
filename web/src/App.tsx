@@ -1,51 +1,52 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrevlyApp, NotFoundPage, RedirectingPage } from './components';
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { BrevlyApp, NotFoundPage, RedirectingPage } from './components'
 
 // Create a client
 const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      retry: 1,
-    },
-    mutations: {
-      retry: 1,
-    },
-  },
-});
+	defaultOptions: {
+		queries: {
+			staleTime: 5 * 60 * 1000, // 5 minutes
+			retry: 1,
+		},
+		mutations: {
+			retry: 1,
+		},
+	},
+})
 
 function App() {
 	// Mock function to simulate getting original URL from short URL
 	const handleRedirect = (shortUrl: string): string | null => {
 		// This would normally make an API call to get the original URL
 		// For now, return null to show 404 for unknown short URLs
-		
+
 		// Mock data - you can add your own short URLs here for testing
 		const mockUrls: Record<string, string> = {
 			'Portfolio-Dev': 'https://devsite.portfolio.com.br/devname-123456',
 			'Linkedin-Profile': 'https://linkedin.com/in/myprofile',
 			'Github-Project': 'https://github.com/devname/project-name-v2',
-			'Figma-Encurtador-de-Links': 'https://figma.com/design/file/Encurtador-de-Links'
-		};
-		
-		return mockUrls[shortUrl] || null;
-	};
- 
+			'Figma-Encurtador-de-Links':
+				'https://figma.com/design/file/Encurtador-de-Links',
+		}
+
+		return mockUrls[shortUrl] || null
+	}
+
 	return (
 		<QueryClientProvider client={queryClient}>
-			<BrowserRouter> 
+			<BrowserRouter>
 				<Routes>
-					<Route path="/" element={<BrevlyApp />} />
-					<Route path="/404" element={<NotFoundPage />} />
-					<Route 
-						path="/:shortUrl" 
-						element={<RedirectingPage onRedirect={handleRedirect} />} 
+					<Route path='/' element={<BrevlyApp />} />
+					<Route path='/404' element={<NotFoundPage />} />
+					<Route
+						path='/:shortUrl'
+						element={<RedirectingPage onRedirect={handleRedirect} />}
 					/>
 				</Routes>
 			</BrowserRouter>
 		</QueryClientProvider>
-	);
+	)
 }
 
-export default App;
+export default App
