@@ -1,29 +1,42 @@
-import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { Button, Input } from './ui';
 
+const formSchema = z.object({
+  originalUrl: z.string().url('Please enter a valid URL'),
+  shortUrl: z.string().min(1, 'Short URL is required'),
+});
+
+type FormData = z.infer<typeof formSchema>;
+
 interface NewLinkFormProps {
-  onSubmit?: (originalUrl: string, shortUrl: string) => void;
+  onSubmit?: (data: FormData) => Promise<void>;
   className?: string;
+  isLoading?: boolean;
+  error?: string;
 }
 
-export function NewLinkForm({ onSubmit, className }: NewLinkFormProps) {
-  const [originalUrl, setOriginalUrl] = useState('');
-  const [shortUrl, setShortUrl] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+export function NewLinkForm({ onSubmit, className, isLoading = false, error }: NewLinkFormProps) {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+    reset,
+  } = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    mode: 'onChange',
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!originalUrl.trim()) return;
-
-    setIsLoading(true);
+  const onFormSubmit = async (data: FormData) => {
     try {
-      await onSubmit?.(originalUrl, shortUrl);
-    } finally {
-      setIsLoading(false);
+      await onSubmit?.(data);
+      reset(); // Clear form on successful submission
+    } catch (error) {
+      // Error handling is done by parent component
+      console.error('Form submission error:', error);
     }
   };
-
-  const isFormValid = originalUrl.trim().length > 0;
 
   return (
     <div className={`bg-[#F9F9FB] rounded-lg p-6 md:p-8 ${className}`}>
@@ -31,12 +44,18 @@ export function NewLinkForm({ onSubmit, className }: NewLinkFormProps) {
         Novo link
       </h2>
       
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      {error && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+          <p className="text-sm text-red-600">{error}</p>
+        </div>
+      )}
+      
+      <form onSubmit={handleSubmit(onFormSubmit)} className="flex flex-col gap-4">
         <Input
           label="link original"
-          placeholder="www.exemplo.com.br"
-          value={originalUrl}
-          onChange={(e) => setOriginalUrl(e.target.value)}
+          placeholder="https://www.exemplo.com.br"
+          {...register('originalUrl')}
+          error={errors.originalUrl?.message}
           required
         />
         
@@ -44,13 +63,13 @@ export function NewLinkForm({ onSubmit, className }: NewLinkFormProps) {
           label="link encurtado"
           prefix="brev.ly/"
           placeholder=""
-          value={shortUrl}
-          onChange={(e) => setShortUrl(e.target.value)}
+          {...register('shortUrl')}
+          error={errors.shortUrl?.message}
         />
         
         <Button
           type="submit"
-          disabled={!isFormValid || isLoading}
+          disabled={!isValid || isLoading}
           className="w-full"
         >
           {isLoading ? 'Salvando...' : 'Salvar link'}

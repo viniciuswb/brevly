@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { LinkList } from './link-list';
 import { Logo } from './logo';
 import { NewLinkForm } from './new-link-form';
+import { useCreateUrl } from '../hooks/useUrlMutations';
+import type { UrlResponse } from '../services/api';
 
 interface Link {
   id: string;
@@ -9,6 +11,14 @@ interface Link {
   originalUrl: string;
   accessCount: number;
 }
+
+// Convert API response to Link format for compatibility
+const convertUrlResponseToLink = (urlResponse: UrlResponse): Link => ({
+  id: urlResponse.id,
+  shortUrl: urlResponse.shortUrl,
+  originalUrl: urlResponse.originalUrl,
+  accessCount: urlResponse.clickCount,
+});
 
 interface BrevlyAppProps {
   initialLinks?: Link[];
@@ -50,19 +60,31 @@ export function BrevlyApp({ initialLinks, withSampleData = true }: BrevlyAppProp
   };
 
   const [links, setLinks] = useState<Link[]>(getInitialLinks());
+  const [submitError, setSubmitError] = useState<string>('');
+  
+  const createUrlMutation = useCreateUrl();
 
-  const handleSubmitLink = async (originalUrl: string, customShort?: string) => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
+  const handleSubmitLink = async (data: { originalUrl: string; shortUrl: string }) => {
+    setSubmitError('');
     
-    const newLink: Link = {
-      id: Date.now().toString(),
-      shortUrl: customShort || `brev.ly/${Date.now()}`,
-      originalUrl,
-      accessCount: 0
-    };
-    
-    setLinks(prev => [newLink, ...prev]);
+    try {
+      const newUrl = await createUrlMutation.mutateAsync({
+        originalUrl: data.originalUrl,
+        shortUrl: data.shortUrl,
+      });
+      
+      // Convert API response and add to links list
+      const newLink = convertUrlResponseToLink(newUrl);
+      setLinks(prev => [newLink, ...prev]);
+    } catch (error) {
+      console.error('Error creating URL:', error);
+      if (error && typeof error === 'object' && 'message' in error) {
+        setSubmitError(error.message as string);
+      } else {
+        setSubmitError('Failed to create short URL. Please try again.');
+      }
+      throw error; // Re-throw so form knows it failed
+    }
   };
 
   const handleCopyLink = (shortUrl: string) => {
@@ -117,7 +139,11 @@ export function BrevlyApp({ initialLinks, withSampleData = true }: BrevlyAppProp
         <div className="flex flex-col lg:flex-row gap-8 items-center lg:items-start justify-center w-full">
           {/* New Link Form */}
           <div className="w-full max-w-[366px] lg:max-w-[380px]">
-            <NewLinkForm onSubmit={handleSubmitLink} />
+            <NewLinkForm 
+              onSubmit={handleSubmitLink} 
+              isLoading={createUrlMutation.isPending}
+              error={submitError}
+            />
           </div>
           
           {/* Link List */}
