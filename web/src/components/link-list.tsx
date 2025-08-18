@@ -6,7 +6,7 @@ interface Link {
   id: string;
   shortUrl: string;
   originalUrl: string;
-  accessCount: number;
+  clickCount: number;
 }
 
 interface LinkListProps {
@@ -15,6 +15,7 @@ interface LinkListProps {
   onDeleteLink?: (shortUrl: string) => void;
   onExportCsv?: () => void;
   className?: string;
+  isLoading?: boolean;
 }
 
 function EmptyState() {
@@ -23,6 +24,17 @@ function EmptyState() {
       <LinkIcon className="text-[#7C7C8A]" size={32} />
       <p className="text-xs text-[#4D505C] text-center uppercase leading-[14px] max-w-[284px]">
         ainda não existem links cadastrados
+      </p>
+    </div>
+  );
+}
+
+function LoadingState() {
+  return (
+    <div className="flex flex-col gap-3 items-center justify-center py-10">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2C46B1]"></div>
+      <p className="text-xs text-[#4D505C] text-center uppercase leading-[14px] max-w-[284px]">
+        carregando links...
       </p>
     </div>
   );
@@ -37,7 +49,8 @@ export function LinkList({
   onCopyLink, 
   onDeleteLink, 
   onExportCsv,
-  className 
+  className,
+  isLoading = false
 }: LinkListProps) {
   const hasLinks = links.length > 0;
 
@@ -67,14 +80,16 @@ export function LinkList({
       <div className="flex flex-col gap-4">
         <Divider />
         
-        {hasLinks ? (
-          <div className="flex flex-col gap-3">
+        {isLoading ? (
+          <LoadingState />
+        ) : hasLinks ? (
+          <div className="flex flex-col gap-3 max-h-80 overflow-y-auto">
             {links.map((link, index) => (
               <div key={link.id}>
                 <LinkItem
                   shortUrl={link.shortUrl}
                   originalUrl={link.originalUrl}
-                  accessCount={link.accessCount}
+                  accessCount={link.clickCount}
                   onCopy={onCopyLink}
                   onDelete={onDeleteLink}
                 />

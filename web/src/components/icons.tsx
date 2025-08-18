@@ -2,7 +2,8 @@ import {
   Copy as PhosphorCopy,
   Trash as PhosphorTrash, 
   DownloadSimple as PhosphorDownload,
-  Link as PhosphorLink
+  Link as PhosphorLink,
+  Warning as PhosphorWarning
 } from 'phosphor-react';
 
 interface IconProps {
@@ -15,7 +16,7 @@ export function CopyIcon({ className, size = 16 }: IconProps) {
     <PhosphorCopy 
       size={size} 
       className={className}
-      weight="regular"
+      weight="bold"
     />
   );
 }
@@ -25,7 +26,7 @@ export function TrashIcon({ className, size = 16 }: IconProps) {
     <PhosphorTrash 
       size={size} 
       className={className}
-      weight="regular"
+      weight="bold"
     />
   );
 }
@@ -43,6 +44,16 @@ export function DownloadIcon({ className, size = 16 }: IconProps) {
 export function LinkIcon({ className, size = 32 }: IconProps) {
   return (
     <PhosphorLink 
+      size={size} 
+      className={className}
+      weight="regular"
+    />
+  );
+}
+
+export function WarningIcon({ className, size = 16 }: IconProps) {
+  return (
+    <PhosphorWarning 
       size={size} 
       className={className}
       weight="regular"

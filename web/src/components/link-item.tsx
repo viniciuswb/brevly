@@ -27,12 +27,23 @@ export function LinkItem({
     onDelete?.(shortUrl);
   };
 
+  const handleShortUrlClick = () => {
+    // Extract short URL identifier (remove the full URL to get just the short code)
+    const shortUrlIdentifier = shortUrl.split('/').pop();
+    // Open the frontend redirecting page which will handle the redirect flow
+    window.open(`/${shortUrlIdentifier}`, '_blank', 'noopener,noreferrer');
+  };
+
   return (
     <div className={`flex flex-row gap-5 md:gap-4 items-center justify-start py-2 ${className}`}>
       <div className="flex-1 flex flex-col gap-1 min-w-0">
-        <div className="text-sm font-semibold text-[#2C46B1] truncate">
+        <button 
+          type="button"
+          className="text-sm font-semibold text-[#2C46B1] truncate cursor-pointer hover:underline text-left"
+          onClick={handleShortUrlClick}
+        >
           {shortUrl}
-        </div>
+        </button>
         <div className="text-xs text-[#4D505C] truncate">
           {originalUrl}
         </div>

@@ -1,35 +1,50 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { BrevlyApp, NotFoundPage, RedirectingPage } from './components';
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrevlyApp, NotFoundPage, RedirectingPage } from './components'
+
+const API_BASE_URL = 'http://localhost:3333'
 
 function App() {
-	// Mock function to simulate getting original URL from short URL
-	const handleRedirect = (shortUrl: string): string | null => {
-		// This would normally make an API call to get the original URL
-		// For now, return null to show 404 for unknown short URLs
-		
-		// Mock data - you can add your own short URLs here for testing
-		const mockUrls: Record<string, string> = {
-			'Portfolio-Dev': 'https://devsite.portfolio.com.br/devname-123456',
-			'Linkedin-Profile': 'https://linkedin.com/in/myprofile',
-			'Github-Project': 'https://github.com/devname/project-name-v2',
-			'Figma-Encurtador-de-Links': 'https://figma.com/design/file/Encurtador-de-Links'
-		};
-		
-		return mockUrls[shortUrl] || null;
-	};
- 
+	// Function to get original URL from short URL and increment click count
+	const handleRedirect = async (shortUrl: string): Promise<string | null> => {
+		try {
+			// First, get all URLs to find the original URL without incrementing count
+			const listResponse = await fetch(`${API_BASE_URL}/urls`)
+			if (!listResponse.ok) {
+				return null
+			}
+			
+			const urls = await listResponse.json()
+			
+			// Find the URL that matches our short URL
+			const targetUrl = urls.find((url: { shortUrl: string; originalUrl: string }) => {
+				// Extract the last part of the shortUrl (the identifier)
+				const shortUrlId = url.shortUrl.split('/').pop()
+				return shortUrlId === shortUrl
+			})
+			
+			if (targetUrl) {
+				return targetUrl.originalUrl
+			}
+
+			return null
+		} catch (error) {
+			console.error('Error fetching redirect URL:', error)
+			return null
+		}
+	}
+
 	return (
-		<BrowserRouter> 
+		<BrowserRouter>
 			<Routes>
-				<Route path="/" element={<BrevlyApp />} />
-				<Route path="/404" element={<NotFoundPage />} />
-				<Route 
-					path="/:shortUrl" 
-					element={<RedirectingPage onRedirect={handleRedirect} />} 
+				<Route path='/' element={<BrevlyApp />} />
+				<Route path='/404' element={<NotFoundPage />} />
+				<Route
+					path='/:shortUrl'
+					element={<RedirectingPage onRedirect={handleRedirect} />}
 				/>
 			</Routes>
 		</BrowserRouter>
-	);
+	)
 }
 
-export default App;
+export default App

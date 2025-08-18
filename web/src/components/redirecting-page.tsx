@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
+const API_BASE_URL = 'http://localhost:3333';
+
 interface RedirectingPageProps {
-  onRedirect?: (shortUrl: string) => string | null;
+  onRedirect?: (shortUrl: string) => Promise<string | null>;
 }
 
 export function RedirectingPage({ onRedirect }: RedirectingPageProps) {
@@ -10,23 +12,33 @@ export function RedirectingPage({ onRedirect }: RedirectingPageProps) {
   const navigate = useNavigate();
   const [targetUrl, setTargetUrl] = useState<string | null>(null);
   const [shouldRedirect, setShouldRedirect] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
-    if (!shortUrl) return;
+    if (!shortUrl || isProcessing) return;
 
-    // Simulate API call to get the original URL
+    setIsProcessing(true);
+
+    // API call to get the original URL
     const getOriginalUrl = async () => {
       // If onRedirect prop is provided, use it to get the URL
       if (onRedirect) {
-        const url = onRedirect(shortUrl);
-        setTargetUrl(url);
-        if (url) {
-          // Wait 2 seconds then redirect
-          setTimeout(() => {
-            setShouldRedirect(true);
-          }, 2000);
-        } else {
-          // If URL not found, redirect to 404 page after a brief moment
+        try {
+          const url = await onRedirect(shortUrl);
+          setTargetUrl(url);
+          if (url) {
+            // Wait 1.5 seconds then redirect
+            setTimeout(() => {
+              setShouldRedirect(true);
+            }, 1500);
+          } else {
+            // If URL not found, redirect to 404 page after a brief moment
+            setTimeout(() => {
+              navigate('/404');
+            }, 1000);
+          }
+        } catch (error) {
+          console.error('Error getting redirect URL:', error);
           setTimeout(() => {
             navigate('/404');
           }, 1000);
@@ -43,17 +55,35 @@ export function RedirectingPage({ onRedirect }: RedirectingPageProps) {
     };
 
     getOriginalUrl();
-  }, [shortUrl, onRedirect, navigate]);
+  }, [shortUrl, onRedirect, navigate, isProcessing]);
 
   useEffect(() => {
-    if (shouldRedirect && targetUrl) {
-      window.location.href = targetUrl;
+    if (shouldRedirect && targetUrl && shortUrl) {
+      // Increment count before redirecting
+      fetch(`${API_BASE_URL}/${shortUrl}`, {
+        method: 'GET',
+        mode: 'no-cors'
+      }).catch(() => {
+        // Ignore errors since we're using no-cors
+      }).finally(() => {
+        // Redirect regardless of count increment success
+        window.location.href = targetUrl;
+      });
     }
-  }, [shouldRedirect, targetUrl]);
+  }, [shouldRedirect, targetUrl, shortUrl]);
 
   const handleManualRedirect = () => {
-    if (targetUrl) {
-      window.location.href = targetUrl;
+    if (targetUrl && shortUrl) {
+      // Increment count before redirecting
+      fetch(`${API_BASE_URL}/${shortUrl}`, {
+        method: 'GET',
+        mode: 'no-cors'
+      }).catch(() => {
+        // Ignore errors since we're using no-cors
+      }).finally(() => {
+        // Redirect regardless of count increment success
+        window.location.href = targetUrl;
+      });
     }
   };
 
@@ -73,20 +103,28 @@ export function RedirectingPage({ onRedirect }: RedirectingPageProps) {
         
         {/* Description */}
         <div className="text-center w-full">
-          <p className="text-[#4D505C] text-sm font-semibold leading-[18px] mb-1">
-            O link será aberto automaticamente em alguns instantes.
-          </p>
-          <p className="text-[#4D505C] text-sm font-semibold leading-[18px]">
-            Não foi redirecionado?{' '}
-            <button 
-              type="button"
-              onClick={handleManualRedirect}
-              className="text-[#2C46B1] underline decoration-from-font hover:opacity-80 focus:outline-none focus:opacity-80"
-              disabled={!targetUrl}
-            >
-              Acesse aqui
-            </button>
-          </p>
+          {!targetUrl ? (
+            <p className="text-[#4D505C] text-sm font-semibold leading-[18px] mb-1">
+              Buscando o link de destino...
+            </p>
+          ) : (
+            <>
+              <p className="text-[#4D505C] text-sm font-semibold leading-[18px] mb-1">
+                O link será aberto automaticamente em alguns instantes.
+              </p>
+              <p className="text-[#4D505C] text-sm font-semibold leading-[18px]">
+                Não foi redirecionado?{' '}
+                <button 
+                  type="button"
+                  onClick={handleManualRedirect}
+                  className="text-[#2C46B1] underline decoration-from-font hover:opacity-80 focus:outline-none focus:opacity-80"
+                  disabled={!targetUrl}
+                >
+                  Acesse aqui
+                </button>
+              </p>
+            </>
+          )}
         </div>
       </div>
     </div>

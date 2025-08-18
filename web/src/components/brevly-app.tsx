@@ -71,14 +71,15 @@ export function BrevlyApp() {
           
           {/* Link List */}
           <div className="w-full max-w-[366px] lg:max-w-[580px]">
-            {isLoading && <p>Loading links...</p>}
-            {isError && <p>Error fetching links.</p>}
-            {links && (
+            {isError ? (
+              <p>Error fetching links.</p>
+            ) : (
               <LinkList
-                links={links.map(link => ({...link, accessCount: link.clickCount}))}
+                links={links ? links.map(link => ({...link, accessCount: link.clickCount})) : []}
                 onCopyLink={handleCopyLink}
                 onDeleteLink={handleDeleteLink}
                 onExportCsv={handleExportCsv}
+                isLoading={isLoading}
               />
             )}
           </div>
