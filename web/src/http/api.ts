@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 
-const API_BASE_URL = 'http://localhost:3333'
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL
 
 export const createLinkSchema = z.object({
 	originalUrl: z.url({ message: 'Por favor, insira uma URL válida' }),

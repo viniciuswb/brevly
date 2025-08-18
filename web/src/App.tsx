@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { BrevlyApp, NotFoundPage, RedirectingPage } from './components'
 
-const API_BASE_URL = 'http://localhost:3333'
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL
 
 function App() {
 	// Function to get original URL from short URL and increment click count

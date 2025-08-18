@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
-const API_BASE_URL = 'http://localhost:3333';
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 interface RedirectingPageProps {
   onRedirect?: (shortUrl: string) => Promise<string | null>;
