@@ -1,29 +1,41 @@
-import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Input } from './ui';
+import { createLinkSchema, useCreateLink, type CreateLinkData } from '@/lib/api';
+import { useState } from 'react';
 
 interface NewLinkFormProps {
-  onSubmit?: (originalUrl: string, shortUrl: string) => void;
+  onLinkCreated: () => void;
   className?: string;
 }
 
-export function NewLinkForm({ onSubmit, className }: NewLinkFormProps) {
-  const [originalUrl, setOriginalUrl] = useState('');
-  const [shortUrl, setShortUrl] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+export function NewLinkForm({ onLinkCreated, className }: NewLinkFormProps) {
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<CreateLinkData>({
+    resolver: zodResolver(createLinkSchema),
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!originalUrl.trim()) return;
+  const createLinkMutation = useCreateLink();
 
-    setIsLoading(true);
+  const handleFormSubmit = async (data: CreateLinkData) => {
+    setErrorMessage(null);
     try {
-      await onSubmit?.(originalUrl, shortUrl);
-    } finally {
-      setIsLoading(false);
+      await createLinkMutation.mutateAsync(data);
+      reset();
+      onLinkCreated();
+    } catch (error) {
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage('An unexpected error occurred.');
+      }
     }
   };
-
-  const isFormValid = originalUrl.trim().length > 0;
 
   return (
     <div className={`bg-[#F9F9FB] rounded-lg p-6 md:p-8 ${className}`}>
@@ -31,12 +43,12 @@ export function NewLinkForm({ onSubmit, className }: NewLinkFormProps) {
         Novo link
       </h2>
       
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit(handleFormSubmit)} className="flex flex-col gap-4">
         <Input
           label="link original"
           placeholder="www.exemplo.com.br"
-          value={originalUrl}
-          onChange={(e) => setOriginalUrl(e.target.value)}
+          {...register('originalUrl')}
+          error={errors.originalUrl?.message}
           required
         />
         
@@ -44,16 +56,20 @@ export function NewLinkForm({ onSubmit, className }: NewLinkFormProps) {
           label="link encurtado"
           prefix="brev.ly/"
           placeholder=""
-          value={shortUrl}
-          onChange={(e) => setShortUrl(e.target.value)}
+          {...register('shortUrl')}
+          error={errors.shortUrl?.message}
         />
+
+        {errorMessage && (
+          <p className="text-sm text-red-600">{errorMessage}</p>
+        )}
         
         <Button
           type="submit"
-          disabled={!isFormValid || isLoading}
+          disabled={isSubmitting}
           className="w-full"
         >
-          {isLoading ? 'Salvando...' : 'Salvar link'}
+          {isSubmitting ? 'Salvando...' : 'Salvar link'}
         </Button>
       </form>
     </div>
