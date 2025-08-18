@@ -28,7 +28,7 @@ async function getLinks(): Promise<Link[]> {
     throw new Error('Failed to fetch links.');
   }
   const data = await response.json();
-  return data.urls;
+  return data;
 }
 
 export function useGetLinks() {

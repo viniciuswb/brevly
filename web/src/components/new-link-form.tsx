@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Input } from './ui';
-import { createLinkSchema, CreateLinkData, useCreateLink } from '@/lib/api';
+import { createLinkSchema, useCreateLink, type CreateLinkData } from '@/lib/api';
 import { useState } from 'react';
 
 interface NewLinkFormProps {
