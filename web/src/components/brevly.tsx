@@ -1,4 +1,4 @@
-import { useGetLinks } from '@/http/api'
+import { useDeleteLink, useGetLinks } from '@/http/api'
 import { useQueryClient } from '@tanstack/react-query'
 import { NewLinkForm } from './brevly-link-form'
 import { Logo } from './brevly-logo'
@@ -7,6 +7,7 @@ import { LinkList } from './brevly-url-list'
 export function BrevlyApp() {
 	const queryClient = useQueryClient()
 	const { data: links, isLoading, isError } = useGetLinks()
+	const deleteLink = useDeleteLink()
 
 	const handleLinkCreated = () => {
 		queryClient.invalidateQueries({ queryKey: ['links'] })
@@ -18,9 +19,17 @@ export function BrevlyApp() {
 		console.log('Link copied:', shortUrl)
 	}
 
-	const handleDeleteLink = (shortUrl: string) => {
-		// This would be a mutation in a real app
-		console.log('Delete link:', shortUrl)
+	const handleDeleteLink = async (shortUrl: string) => {
+		// Extract slug from shortUrl (e.g., "http://localhost:3333/abc123" -> "abc123")
+		const slug = shortUrl.split('/').pop()
+		if (!slug) return
+		
+		try {
+			await deleteLink.mutateAsync(slug)
+			queryClient.invalidateQueries({ queryKey: ['links'] })
+		} catch (error) {
+			console.error('Failed to delete link:', error)
+		}
 	}
 
 	const handleExportCsv = () => {

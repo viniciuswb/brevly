@@ -1,5 +1,5 @@
+import { asc, desc, eq, sql } from 'drizzle-orm'
 import { Readable } from 'node:stream'
-import { asc, eq, sql } from 'drizzle-orm'
 import { uuidv7 } from 'uuidv7'
 
 import { db } from '@/db'
@@ -48,7 +48,7 @@ export class DrizzleUrlsRepository implements UrlsRepository {
 				createdAt: schema.urls.createdAt,
 			})
 			.from(schema.urls)
-			.orderBy(asc(schema.urls.createdAt))
+			.orderBy(desc(schema.urls.createdAt))
 
 		return urls
 	}

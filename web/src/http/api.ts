@@ -62,3 +62,20 @@ export function useCreateLink() {
 		mutationFn: createLink,
 	})
 }
+
+async function deleteLink(slug: string) {
+	const response = await fetch(`${API_BASE_URL}/urls/${slug}`, {
+		method: 'DELETE',
+	})
+
+	if (!response.ok) {
+		const errorData = await response.json()
+		throw new Error(errorData.message || 'Failed to delete link.')
+	}
+}
+
+export function useDeleteLink() {
+	return useMutation({
+		mutationFn: deleteLink,
+	})
+}
