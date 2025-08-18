@@ -2,7 +2,7 @@
 
 import type { InputHTMLAttributes } from 'react'
 import { forwardRef } from 'react'
-import { WarningIcon } from '../icons'
+import { WarningIcon } from '../brevly-icons'
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 	label?: string

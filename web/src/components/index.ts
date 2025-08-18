@@ -1,9 +1,9 @@
-export { BrevlyApp } from './brevly-app';
-export { Logo } from './logo';
-export { NewLinkForm } from './new-link-form';
-export { LinkList } from './link-list';
-export { LinkItem } from './link-item';
-export { NotFoundPage } from './not-found-page';
-export { RedirectingPage } from './redirecting-page';
-export * from './icons';
-export * from './ui';
+export { BrevlyApp } from './brevly'
+export * from './brevly-icons'
+export { NewLinkForm } from './brevly-link-form'
+export { Logo } from './brevly-logo'
+export { NotFoundPage } from './brevly-not-found-page'
+export { RedirectingPage } from './brevly-redirecting-page'
+export { LinkList } from './brevly-url-list'
+export { LinkItem } from './brevly-url-list-item'
+export * from './ui'
