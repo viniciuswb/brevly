@@ -1,6 +1,6 @@
 import { DownloadIcon, LinkIcon } from './brevly-icons'
 import { LinkItem } from './brevly-url-list-item'
-import { Button } from './ui'
+import { Button, ScrollArea } from './ui'
 
 interface Link {
 	id: string
@@ -16,6 +16,7 @@ interface LinkListProps {
 	onExportCsv?: () => void
 	className?: string
 	isLoading?: boolean
+	isSaving?: boolean
 }
 
 function EmptyState() {
@@ -51,11 +52,12 @@ export function LinkList({
 	onExportCsv,
 	className,
 	isLoading = false,
+	isSaving = false,
 }: LinkListProps) {
 	const hasLinks = links.length > 0
 
 	return (
-		<div className={`bg-[#F9F9FB] rounded-lg p-6 md:p-8 ${className}`}>
+		<div className={`bg-[#F9F9FB] rounded-lg p-6 md:p-8 ${isSaving || isLoading ? 'border-loading' : ''} ${className}`}>
 			<div className='flex flex-row items-center justify-between mb-5'>
 				<h2 className='text-lg font-bold text-[#1F2025]'>Meus links</h2>
 
@@ -81,20 +83,22 @@ export function LinkList({
 				{isLoading ? (
 					<LoadingState />
 				) : hasLinks ? (
-					<div className='flex flex-col gap-3 max-h-80 overflow-y-auto'>
-						{links.map((link, index) => (
-							<div key={link.id}>
-								<LinkItem
-									shortUrl={link.shortUrl}
-									originalUrl={link.originalUrl}
-									accessCount={link.clickCount}
-									onCopy={onCopyLink}
-									onDelete={onDeleteLink}
-								/>
-								{index < links.length - 1 && <Divider />}
-							</div>
-						))}
-					</div>
+					<ScrollArea className="h-80">
+						<div className='flex flex-col gap-3'>
+							{links.map((link, index) => (
+								<div key={link.id}>
+									<LinkItem
+										shortUrl={link.shortUrl}
+										originalUrl={link.originalUrl}
+										accessCount={link.clickCount}
+										onCopy={onCopyLink}
+										onDelete={onDeleteLink}
+									/>
+									{index < links.length - 1 && <Divider />}
+								</div>
+							))}
+						</div>
+					</ScrollArea>
 				) : (
 					<EmptyState />
 				)}

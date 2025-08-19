@@ -1,6 +1,8 @@
 import { CopyIcon, TrashIcon } from './brevly-icons'
 import { Button } from './ui'
 
+const BASE_URL = import.meta.env.VITE_FRONTEND_URL
+
 interface LinkItemProps {
 	shortUrl: string
 	originalUrl: string
@@ -19,8 +21,9 @@ export function LinkItem({
 	className,
 }: LinkItemProps) {
 	const handleCopy = () => {
-		navigator.clipboard.writeText(shortUrl)
-		onCopy?.(shortUrl)
+		const url = new URL(shortUrl, BASE_URL).toString()
+		navigator.clipboard.writeText(url)
+		onCopy?.(url)
 	}
 
 	const handleDelete = () => {
@@ -28,10 +31,8 @@ export function LinkItem({
 	}
 
 	const handleShortUrlClick = () => {
-		// Extract short URL identifier (remove the full URL to get just the short code)
-		const shortUrlIdentifier = shortUrl.split('/').pop()
 		// Open the frontend redirecting page which will handle the redirect flow
-		window.open(`/${shortUrlIdentifier}`, '_blank', 'noopener,noreferrer')
+		window.open(`/${shortUrl}`, '_blank', 'noopener,noreferrer')
 	}
 
 	return (
@@ -44,7 +45,7 @@ export function LinkItem({
 					className='text-sm font-semibold text-[#2C46B1] truncate cursor-pointer hover:underline text-left'
 					onClick={handleShortUrlClick}
 				>
-					{shortUrl}
+					{new URL(shortUrl, BASE_URL).toString()}
 				</button>
 				<div className='text-xs text-[#4D505C] truncate'>{originalUrl}</div>
 			</div>

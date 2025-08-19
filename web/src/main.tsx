@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "react-hot-toast";
 import App from "./App.tsx";
 import "./index.css";
 
@@ -13,6 +14,12 @@ createRoot(rootElement).render(
 	<StrictMode>
 		<QueryClientProvider client={queryClient}>
 			<App />
+			<Toaster
+				position="bottom-right"
+				toastOptions={{
+					duration: 5000,
+				}}
+			/>
 		</QueryClientProvider>
 	</StrictMode>,
 );

@@ -1,8 +1,58 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Quicksand:wght@700&display=swap');
 @import "tailwindcss";
 
+@keyframes loading-line {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
 body {
   font-family: 'Open Sans', sans-serif;
   margin: 0;
   padding: 0;
+}
+
+/* Radix UI ScrollArea custom styling */
+.scroll-area-scrollbar {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.scroll-area-thumb {
+  background: #2C46B1;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.scroll-area-thumb:hover {
+  background: #2C4091;
+}
+
+.scroll-area-corner {
+  background: #f1f1f1;
+}
+
+/* Top border loading animation */
+.border-loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.border-loading::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #2C46B1;
+  animation: loading-line 1.5s ease-in-out infinite;
+  z-index: 10;
 }

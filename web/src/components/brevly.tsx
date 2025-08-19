@@ -1,5 +1,7 @@
 import { useDeleteLink, useGetLinks } from '@/http/api'
 import { useQueryClient } from '@tanstack/react-query'
+import { useState } from 'react'
+import toast from 'react-hot-toast'
 import { NewLinkForm } from './brevly-link-form'
 import { Logo } from './brevly-logo'
 import { LinkList } from './brevly-url-list'
@@ -8,18 +10,41 @@ export function BrevlyApp() {
 	const queryClient = useQueryClient()
 	const { data: links, isLoading, isError } = useGetLinks()
 	const deleteLink = useDeleteLink()
+	const [isSaving, setIsSaving] = useState(false)
 
 	const handleLinkCreated = () => {
 		queryClient.invalidateQueries({ queryKey: ['links'] })
 	}
 
+	const handleSubmittingChange = (isSubmitting: boolean) => {
+		setIsSaving(isSubmitting)
+	}
+
 	const handleCopyLink = (shortUrl: string) => {
 		navigator.clipboard.writeText(shortUrl)
-		// Optional: Show success toast or feedback
-		console.log('Link copied:', shortUrl)
+		toast(
+			() => (
+				<div className="flex flex-col gap-1">
+					<div className="font-bold text-xs">Link copiado</div>
+					<div className="text-xs font-normal">O link foi copiado para a área de transferência</div>
+				</div>
+			),
+			{
+				style: {
+					background: '#2C46B1',
+					color: 'white',
+					fontSize: '12px',
+					padding: '12px',
+				},
+			}
+		)
 	}
 
 	const handleDeleteLink = async (shortUrl: string) => {
+		// Ask for confirmation
+		const confirmed = window.confirm('Tem certeza que deseja excluir este link?')
+		if (!confirmed) return
+
 		// Extract slug from shortUrl (e.g., "http://localhost:3333/abc123" -> "abc123")
 		const slug = shortUrl.split('/').pop()
 		if (!slug) return
@@ -27,8 +52,42 @@ export function BrevlyApp() {
 		try {
 			await deleteLink.mutateAsync(slug)
 			queryClient.invalidateQueries({ queryKey: ['links'] })
+			
+			// Show success toast
+			toast(
+				() => (
+					<div className="flex flex-col gap-1">
+						<div className="font-bold text-xs">Link excluído</div>
+						<div className="text-xs font-normal">O link foi excluído com sucesso</div>
+					</div>
+				),
+				{
+					style: {
+						background: '#22c55e',
+						color: 'white',
+						fontSize: '12px',
+						padding: '12px',
+					},
+				}
+			)
 		} catch (error) {
-			console.error('Failed to delete link:', error)
+			const errorMessage = error instanceof Error ? error.message : 'Erro inesperado ao excluir link.'
+			toast.error(
+				() => (
+					<div className="flex flex-col gap-1">
+						<div className="font-bold text-xs">Erro ao excluir</div>
+						<div className="text-xs font-normal">{errorMessage}</div>
+					</div>
+				),
+				{
+					style: {
+						background: '#ef4444',
+						color: 'white',
+						fontSize: '12px',
+						padding: '12px',
+					},
+				}
+			)
 		}
 	}
 
@@ -79,7 +138,10 @@ export function BrevlyApp() {
 				<div className='flex flex-col lg:flex-row gap-8 items-center lg:items-start justify-center w-full'>
 					{/* New Link Form */}
 					<div className='w-full max-w-[366px] lg:max-w-[380px]'>
-						<NewLinkForm onLinkCreated={handleLinkCreated} />
+						<NewLinkForm 
+							onLinkCreated={handleLinkCreated} 
+							onSubmittingChange={handleSubmittingChange}
+						/>
 					</div>
 
 					{/* Link List */}
@@ -100,6 +162,7 @@ export function BrevlyApp() {
 								onDeleteLink={handleDeleteLink}
 								onExportCsv={handleExportCsv}
 								isLoading={isLoading}
+								isSaving={isSaving}
 							/>
 						)}
 					</div>

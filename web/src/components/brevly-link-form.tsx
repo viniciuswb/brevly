@@ -4,17 +4,18 @@ import {
 	type CreateLinkData,
 } from '@/http/api'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useState } from 'react'
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
+import toast from 'react-hot-toast'
 import { Button, Input } from './ui'
 
 interface NewLinkFormProps {
 	onLinkCreated: () => void
+	onSubmittingChange?: (isSubmitting: boolean) => void
 	className?: string
 }
 
-export function NewLinkForm({ onLinkCreated, className }: NewLinkFormProps) {
-	const [errorMessage, setErrorMessage] = useState<string | null>(null)
+export function NewLinkForm({ onLinkCreated, onSubmittingChange, className }: NewLinkFormProps) {
 	const {
 		register,
 		handleSubmit,
@@ -26,18 +27,33 @@ export function NewLinkForm({ onLinkCreated, className }: NewLinkFormProps) {
 
 	const createLinkMutation = useCreateLink()
 
+	useEffect(() => {
+		onSubmittingChange?.(isSubmitting)
+	}, [isSubmitting, onSubmittingChange])
+
 	const handleFormSubmit = async (data: CreateLinkData) => {
-		setErrorMessage(null)
 		try {
 			await createLinkMutation.mutateAsync(data)
 			reset()
 			onLinkCreated()
 		} catch (error) {
-			if (error instanceof Error) {
-				setErrorMessage(error.message)
-			} else {
-				setErrorMessage('An unexpected error occurred.')
-			}
+			const errorMessage = error instanceof Error ? error.message : 'Erro inesperado.'
+			toast.error(
+				() => (
+					<div className="flex flex-col gap-1">
+						<div className="font-bold text-xs">Erro no cadastro</div>
+						<div className="text-xs font-normal">{errorMessage}</div>
+					</div>
+				),
+				{
+					style: {
+						background: '#ef4444',
+						color: 'white',
+						fontSize: '12px',
+						padding: '12px',
+					},
+				}
+			)
 		}
 	}
 
@@ -65,7 +81,6 @@ export function NewLinkForm({ onLinkCreated, className }: NewLinkFormProps) {
 					error={errors.shortUrl?.message}
 				/>
 
-				{errorMessage && <p className='text-sm text-red-600'>{errorMessage}</p>}
 
 				<Button type='submit' disabled={isSubmitting} className='w-full'>
 					{isSubmitting ? 'Salvando...' : 'Salvar link'}
