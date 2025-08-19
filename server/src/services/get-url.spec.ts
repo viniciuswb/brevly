@@ -16,7 +16,7 @@ describe('getUrl', () => {
 	it('should get a URL and increment click count', async () => {
 		await urlsRepository.create({
 			originalUrl: 'https://www.example.com',
-			shortUrl: 'http://localhost:3333/example',
+			shortUrl: 'example',
 		})
 
 		const url = await sut.execute({
@@ -25,13 +25,11 @@ describe('getUrl', () => {
 
 		expect(url.id).toEqual(expect.any(String))
 		expect(url.originalUrl).toEqual('https://www.example.com')
-		expect(url.shortUrl).toEqual('http://localhost:3333/example')
+		expect(url.shortUrl).toEqual('example')
 		expect(url.clickCount).toEqual(1)
 		expect(url.createdAt).toEqual(expect.any(Date))
 
-		const updatedUrl = await urlsRepository.findByShortUrl(
-			'http://localhost:3333/example'
-		)
+		const updatedUrl = await urlsRepository.findByShortUrl('example')
 		expect(updatedUrl?.clickCount).toEqual(1)
 	})
 
@@ -46,7 +44,7 @@ describe('getUrl', () => {
 	it('should increment click count on multiple accesses', async () => {
 		await urlsRepository.create({
 			originalUrl: 'https://www.example.com',
-			shortUrl: 'http://localhost:3333/example',
+			shortUrl: 'example',
 		})
 
 		const firstAccess = await sut.execute({
@@ -59,9 +57,7 @@ describe('getUrl', () => {
 		})
 		expect(secondAccess.clickCount).toEqual(2)
 
-		const updatedUrl = await urlsRepository.findByShortUrl(
-			'http://localhost:3333/example'
-		)
+		const updatedUrl = await urlsRepository.findByShortUrl('example')
 		expect(updatedUrl?.clickCount).toEqual(2)
 	})
 })

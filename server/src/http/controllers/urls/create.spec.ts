@@ -19,7 +19,7 @@ describe('Create a shortUrl (e2e)', () => {
 		})
 
 		expect(response.statusCode).toBe(201)
-		expect(response.body.shortUrl).toEqual('http://localhost:3333/google')
+		expect(response.body.shortUrl).toEqual('google')
 	})
 
 	it('should return 409 when shortUrl already exists', async () => {
@@ -71,9 +71,7 @@ describe('Create a shortUrl (e2e)', () => {
 
 		// Verify the data matches what we sent, with slug converted to full URL
 		expect(response.body.originalUrl).toBe(urlData.originalUrl)
-		expect(response.body.shortUrl).toBe(
-			`http://localhost:3333/${urlData.shortUrl}`
-		)
+		expect(response.body.shortUrl).toBe(urlData.shortUrl)
 		expect(response.body.clickCount).toBe(0)
 		expect(response.body.id).toBeDefined()
 		expect(new Date(response.body.createdAt)).toBeInstanceOf(Date)

@@ -23,16 +23,16 @@ describe('List URLs (e2e)', () => {
 		await request(app.server)
 			.post('/urls')
 			.send({
-				originalUrl: 'https://www.example.com',
-				shortUrl: 'example',
+				originalUrl: 'https://www.google.com',
+				shortUrl: 'google',
 			})
 			.expect(201)
 
 		await request(app.server)
 			.post('/urls')
 			.send({
-				originalUrl: 'https://www.google.com',
-				shortUrl: 'google',
+				originalUrl: 'https://www.example.com',
+				shortUrl: 'example',
 			})
 			.expect(201)
 
@@ -59,12 +59,12 @@ describe('List URLs (e2e)', () => {
 		)
 	})
 
-	it('should return URLs sorted by creation date', async () => {
+	it('should return URLs sorted by creation date (desc)', async () => {
 		const response = await request(app.server).get('/urls').expect(200)
 
 		if (response.body.length > 1) {
-			const firstCreatedAt = new Date(response.body[0].createdAt)
-			const secondCreatedAt = new Date(response.body[1].createdAt)
+			const firstCreatedAt = new Date(response.body[1].createdAt)
+			const secondCreatedAt = new Date(response.body[0].createdAt)
 			expect(firstCreatedAt.getTime()).toBeLessThanOrEqual(
 				secondCreatedAt.getTime()
 			)

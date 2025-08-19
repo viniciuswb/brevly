@@ -1,7 +1,6 @@
 import { z } from 'zod'
 
 import type { Url } from '@/db/types'
-import { env } from '@/env'
 import type { UrlsRepository } from '@/repositories/urls-repository'
 import { InvalidUrlFormatError } from './errors/invalid-url-format-error'
 import { ShortUrlAlreadyExistsError } from './errors/short-url-already-exists-error'
@@ -30,14 +29,15 @@ export class CreateShortUrlService {
 			throw new InvalidUrlFormatError()
 		}
 
-		const shortUrl = new URL(slug, env.BASE_SHORT_URL).toString()
-
-		const existingUrl = await this.urlsRepository.findByShortUrl(shortUrl)
+		const existingUrl = await this.urlsRepository.findByShortUrl(slug)
 		if (existingUrl) {
 			throw new ShortUrlAlreadyExistsError()
 		}
 
-		const url = await this.urlsRepository.create({ originalUrl, shortUrl })
+		const url = await this.urlsRepository.create({
+			originalUrl,
+			shortUrl: slug,
+		})
 		return url
 	}
 }

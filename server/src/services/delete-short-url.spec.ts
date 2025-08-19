@@ -16,11 +16,10 @@ describe('DeleteShortUrlService', () => {
 	it('should be able to delete a short url', async () => {
 		const slug = 'test-slug'
 		const originalUrl = 'https://example.com'
-		const shortUrl = `http://localhost:3333/${slug}`
 
 		await urlsRepository.create({
 			originalUrl,
-			shortUrl,
+			shortUrl: slug,
 		})
 
 		await sut.execute({ slug })
@@ -31,8 +30,6 @@ describe('DeleteShortUrlService', () => {
 	it('should not be able to delete a non-existing short url', async () => {
 		const slug = 'test-slug'
 
-		await expect(sut.execute({ slug })).rejects.toBeInstanceOf(
-			UrlNotFoundError,
-		)
+		await expect(sut.execute({ slug })).rejects.toBeInstanceOf(UrlNotFoundError)
 	})
 })

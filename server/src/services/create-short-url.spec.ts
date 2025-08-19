@@ -20,7 +20,7 @@ describe('createShortUrl', () => {
 			shortUrl: 'google',
 		})
 
-		expect(shortUrl).toEqual('http://localhost:3333/google')
+		expect(shortUrl).toEqual('google')
 		expect(originalUrl).toEqual('https://google.com')
 	})
 
