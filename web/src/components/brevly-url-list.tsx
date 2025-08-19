@@ -1,4 +1,4 @@
-import { DownloadIcon, LinkIcon } from './brevly-icons'
+import { DownloadIcon, LinkIcon, WarningIcon } from './brevly-icons'
 import { LinkItem } from './brevly-url-list-item'
 import { Button, ScrollArea } from './ui'
 
@@ -17,6 +17,7 @@ interface LinkListProps {
 	className?: string
 	isLoading?: boolean
 	isSaving?: boolean
+	isError?: boolean
 }
 
 function EmptyState() {
@@ -41,6 +42,17 @@ function LoadingState() {
 	)
 }
 
+function ErrorState() {
+	return (
+		<div className='flex flex-col gap-3 items-center justify-center py-10'>
+			<WarningIcon className='text-[#7C7C8A]' size={32} />
+			<p className='text-xs text-[#4D505C] text-center uppercase leading-[14px] max-w-[284px]'>
+				erro ao carregar links. verifique se o servidor está funcionando.
+			</p>
+		</div>
+	)
+}
+
 function Divider() {
 	return <hr className='border-0 h-px bg-[#E4E6EC] w-full' />
 }
@@ -53,6 +65,7 @@ export function LinkList({
 	className,
 	isLoading = false,
 	isSaving = false,
+	isError = false,
 }: LinkListProps) {
 	const hasLinks = links.length > 0
 
@@ -82,6 +95,8 @@ export function LinkList({
 
 				{isLoading ? (
 					<LoadingState />
+				) : isError ? (
+					<ErrorState />
 				) : hasLinks ? (
 					<ScrollArea className="h-80">
 						<div className='flex flex-col gap-3'>
