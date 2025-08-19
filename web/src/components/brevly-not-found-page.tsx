@@ -1,5 +1,7 @@
 import { Logo } from './brevly-logo'
 
+const BASE_URL = import.meta.env.VITE_FRONTEND_URL
+
 export function NotFoundPage() {
 	return (
 		<div className='min-h-screen bg-[#E4E6EC] flex flex-col items-center justify-center p-4'>
@@ -29,9 +31,12 @@ export function NotFoundPage() {
 					<p className='text-[#4D505C] text-sm font-semibold leading-[18px]'>
 						O link que você está tentando acessar não existe, foi removido ou é
 						uma URL inválida. Saiba mais em{' '}
-						<span className='text-[#2C46B1] underline decoration-from-font'>
+						<a
+							href={BASE_URL}
+							className='text-[#2C46B1] underline decoration-from-font'
+						>
 							brev.ly
-						</span>
+						</a>
 						.
 					</p>
 				</div>
