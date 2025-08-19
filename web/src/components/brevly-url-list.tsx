@@ -17,6 +17,7 @@ interface LinkListProps {
 	className?: string
 	isLoading?: boolean
 	isSaving?: boolean
+	isExporting?: boolean
 	isError?: boolean
 }
 
@@ -65,6 +66,7 @@ export function LinkList({
 	className,
 	isLoading = false,
 	isSaving = false,
+	isExporting = false,
 	isError = false,
 }: LinkListProps) {
 	const hasLinks = links.length > 0
@@ -78,15 +80,15 @@ export function LinkList({
 					variant='secondary'
 					size='sm'
 					onClick={onExportCsv}
-					disabled={!hasLinks}
+					disabled={!hasLinks || isExporting}
 					className={`flex items-center gap-1.5 !bg-[#E4E6EC] !border-transparent !text-[#4D505C] hover:!border-[#2C46B1] hover:!bg-[#E4E6EC] hover:!text-[#4D505C] !rounded-sm ${
-						!hasLinks
+						!hasLinks || isExporting
 							? 'opacity-50 cursor-not-allowed hover:!border-transparent'
 							: ''
 					}`}
 				>
 					<DownloadIcon size={16} />
-					Baixar CSV
+					{isExporting ? 'Gerando CSV' : 'Baixar CSV'}
 				</Button>
 			</div>
 
