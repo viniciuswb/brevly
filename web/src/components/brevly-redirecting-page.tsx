@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import BrevlyLogoSvg from './assets/brevly-logo.svg';
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -93,7 +94,7 @@ export function RedirectingPage({ onRedirect }: RedirectingPageProps) {
       <div className="bg-[#F9F9FB] rounded-lg px-12 py-16 flex flex-col items-center justify-center gap-6 w-full max-w-[580px]">
         {/* Brevly Logo */}
         <div className="w-12 h-12 flex items-center justify-center">
-          <img src="/src/components/assets/brevly-logo.svg" alt="Brevly" className="w-12 h-12" />
+          <img src={BrevlyLogoSvg} alt="Brevly" className="w-12 h-12" />
         </div>
         
         {/* Title */}

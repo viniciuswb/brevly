@@ -1,4 +1,5 @@
 import { Logo } from './brevly-logo'
+import NotFoundErrorSvg from './assets/404-error.svg'
 
 const BASE_URL = import.meta.env.VITE_FRONTEND_URL
 
@@ -15,7 +16,7 @@ export function NotFoundPage() {
 				{/* 404 Error Image */}
 				<div className='w-[194px] h-[85px] flex items-center justify-center'>
 					<img
-						src='/src/components/assets/404-error.svg'
+						src={NotFoundErrorSvg}
 						alt='404 Error'
 						className='w-[194px] h-[85px]'
 					/>

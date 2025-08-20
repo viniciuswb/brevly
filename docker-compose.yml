@@ -11,7 +11,7 @@ services:
       - pg_data:/bitnami/postgresql
 
   server:
-    build: .
+    build: ./server
     ports:
       - "3333:3333"
     environment:
@@ -26,6 +26,17 @@ services:
       - CLOUDFLARE_PUBLIC_URL=${CLOUDFLARE_PUBLIC_URL}
     depends_on:
       - pg
+
+  web:
+    build: 
+      context: ./web
+      args:
+        - VITE_BACKEND_URL=http://localhost:3333
+        - VITE_FRONTEND_URL=http://localhost:5173
+    ports:
+      - "5173:5173"
+    depends_on:
+      - server
 
 volumes:
   pg_data:
