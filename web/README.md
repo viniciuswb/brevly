@@ -1,45 +1,98 @@
-## Description and Requirements
+# Brevly Frontend
 
-This is the client-side code for the Brevly URL shortener service. 
+React-based frontend for the Brevly URL shortener service.
 
-### Tech Stack
+## Tech Stack
 
-- TypeScript
-- React
-- Vite without framework
-- Tailwind CSS
-- React Query
-- Zod
+- **TypeScript** - Type safety and better developer experience
+- **React** - UI library with hooks and modern patterns
+- **Vite** - Fast build tool and development server
+- **Tailwind CSS** - Utility-first CSS framework
+- **React Query** - Data fetching and state management
+- **React Hook Form + Zod** - Form handling and validation
+- **React Router** - Client-side routing
 
-### Functionality and rules
+## Features
 
-* [] Should be able to create a link
-  * [] Should not be able to create a link with a short URL that is not a valid URL
-  * [] Should not be able to create a link with a short URL that already exists
-* [] Should be able to delete a link
-* [] Should be able to get the original URL from a short URL
-* [] Should be able to list all registered URLs
-* [] Should be able to increment the click count for a short URL
-* [] Should be able to download a CSV file with the report of created links
+- ✅ Create and validate short URLs
+- ✅ List and manage existing URLs
+- ✅ Delete URLs with confirmation
+- ✅ URL redirection with loading states
+- ✅ CSV export functionality with visual feedback
+- ✅ Responsive design for desktop and mobile
+- ✅ Error handling and empty states
+- ✅ Loading indicators throughout the app
 
-### Technical requirements
-* It's required to be a single page application with React using Vite as the bundler
-* Use elements that create a good experience to the user (empty state, loading icons, action blocking depending on application state)
-* Application should be responsive providing a good experience on Desktop and Mobile devices
-* Use Tailwind CSS for styling
-* Use React Query for data fetching
-* Use Zod and React Hook Form for form validation
+## Development
 
-### Pages
-The application has 3 pages:
-* The root page (`/`) should have a form to create a new link and a list of all created links
-* The `/:short_url` page should have the original URL
-* The not found page (`/404`) should have a message indicating that the page was not found. This page should be displayed for any page that don't follow the pattern above or the short_url doesn't exist.
+### Prerequisites
 
-### Environment variables
+- Node.js 22+ (Alpine Linux compatible)
+- pnpm 10.14.0+
 
-````
-VITE_FRONTEND_URL=
-VITE_BACKEND_URL=
-````
+### Setup
+
+```bash
+# Install dependencies
+pnpm install
+
+# Start development server
+pnpm run dev
+
+# Build for production
+pnpm run build
+
+# Preview production build
+pnpm run preview
+
+# Run linter
+pnpm run lint
+```
+
+### Environment Variables
+
+Create a `.env.local` file:
+
+```bash
+VITE_FRONTEND_URL=http://localhost:5173
+VITE_BACKEND_URL=http://localhost:3333
+```
+
+## Project Structure
+
+```
+src/
+├── App.tsx                    # Main app with routing
+├── main.tsx                   # Application entry point
+├── components/
+│   ├── brevly-app.tsx         # Main layout and state management
+│   ├── brevly-url-list.tsx    # URL list with CRUD operations
+│   ├── brevly-link-form.tsx   # Form for creating URLs
+│   ├── brevly-icons.tsx       # Phosphor icon components
+│   ├── brevly-not-found-page.tsx    # 404 page
+│   ├── brevly-redirecting-page.tsx  # URL redirect handling
+│   └── ui/                    # Reusable UI components
+├── http/                      # API client and React Query hooks
+└── lib/                       # Utilities and configurations
+```
+
+## Pages
+
+- **`/`** - Home page with URL creation form and list
+- **`/:short_url`** - Redirect page that fetches and redirects to original URL
+- **`/404`** - Not found page for invalid routes or non-existent short URLs
+
+## Code Quality
+
+The project uses Biome for linting and formatting:
+- Tabs (width 2), single quotes, semicolons as needed
+- Line width: 80 characters
+- Configured in `biome.json`
+
+## API Integration
+
+The frontend communicates with the backend API through:
+- React Query for data fetching and caching
+- Custom hooks in `src/http/` for API operations
+- Automatic error handling and loading states
 

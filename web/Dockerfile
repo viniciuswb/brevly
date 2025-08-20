@@ -18,8 +18,6 @@ COPY . .
 # Set build-time environment variables
 ARG VITE_BACKEND_URL=http://localhost:3333
 ARG VITE_FRONTEND_URL=http://localhost:5173
-ENV VITE_BACKEND_URL=$VITE_BACKEND_URL
-ENV VITE_FRONTEND_URL=$VITE_FRONTEND_URL
 
 # Build the application
 RUN pnpm run build
