@@ -79,3 +79,20 @@ export function useDeleteLink() {
 		mutationFn: deleteLink,
 	})
 }
+
+async function exportUrls(): Promise<{ url: string }> {
+	const response = await fetch(`${API_BASE_URL}/urls/export`)
+	
+	if (!response.ok) {
+		const errorData = await response.json()
+		throw new Error(errorData.message || 'Failed to export URLs.')
+	}
+	
+	return response.json()
+}
+
+export function useExportUrls() {
+	return useMutation({
+		mutationFn: exportUrls,
+	})
+}

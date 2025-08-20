@@ -1,4 +1,4 @@
-import { useDeleteLink, useGetLinks } from '@/http/api'
+import { useDeleteLink, useGetLinks, useExportUrls } from '@/http/api'
 import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
@@ -10,7 +10,9 @@ export function BrevlyApp() {
 	const queryClient = useQueryClient()
 	const { data: links, isLoading, isError } = useGetLinks()
 	const deleteLink = useDeleteLink()
+	const exportUrls = useExportUrls()
 	const [isSaving, setIsSaving] = useState(false)
+	const [isExporting, setIsExporting] = useState(false)
 
 	const handleLinkCreated = () => {
 		queryClient.invalidateQueries({ queryKey: ['links'] })
@@ -91,26 +93,55 @@ export function BrevlyApp() {
 		}
 	}
 
-	const handleExportCsv = () => {
+	const handleExportCsv = async () => {
 		if (!links) return
-		const csvContent = [
-			['Short URL', 'Original URL', 'Access Count'],
-			...links.map(link => [
-				link.shortUrl,
-				link.originalUrl,
-				link.clickCount.toString(),
-			]),
-		]
-			.map(row => row.join(','))
-			.join('\n')
-
-		const blob = new Blob([csvContent], { type: 'text/csv' })
-		const url = URL.createObjectURL(blob)
-		const a = document.createElement('a')
-		a.href = url
-		a.download = 'brevly-links.csv'
-		a.click()
-		URL.revokeObjectURL(url)
+		
+		setIsExporting(true)
+		
+		try {
+			const { url } = await exportUrls.mutateAsync()
+			
+			const a = document.createElement('a')
+			a.href = url
+			a.download = 'brevly-links.csv'
+			a.click()
+			
+			toast(
+				() => (
+					<div className="flex flex-col gap-1">
+						<div className="font-bold text-xs">CSV Gerado com sucesso</div>
+					</div>
+				),
+				{
+					style: {
+						background: '#22c55e',
+						color: 'white',
+						fontSize: '12px',
+						padding: '12px',
+					},
+				}
+			)
+		} catch (error) {
+			const errorMessage = error instanceof Error ? error.message : 'Error when trying to generate CSV'
+			toast.error(
+				() => (
+					<div className="flex flex-col gap-1">
+						<div className="font-bold text-xs">Erro ao gerar CSV</div>
+						<div className="text-xs font-normal">{errorMessage}</div>
+					</div>
+				),
+				{
+					style: {
+						background: '#ef4444',
+						color: 'white',
+						fontSize: '12px',
+						padding: '12px',
+					},
+				}
+			)
+		} finally {
+			setIsExporting(false)
+		}
 	}
 
 	return (
@@ -160,6 +191,7 @@ export function BrevlyApp() {
 							onExportCsv={handleExportCsv}
 							isLoading={isLoading}
 							isSaving={isSaving}
+							isExporting={isExporting}
 							isError={isError}
 						/>
 					</div>
