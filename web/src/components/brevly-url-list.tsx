@@ -87,7 +87,11 @@ export function LinkList({
 							: ''
 					}`}
 				>
-					<DownloadIcon size={16} />
+					{isExporting ? (
+						<div className='animate-spin rounded-full h-4 w-4 border-b-2 border-[#4D505C]'></div>
+					) : (
+						<DownloadIcon size={16} />
+					)}
 					{isExporting ? 'Gerando CSV' : 'Baixar CSV'}
 				</Button>
 			</div>
