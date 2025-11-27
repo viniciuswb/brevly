@@ -3,9 +3,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { InMemoryUrlsRepository } from '@/repositories/in-memory/in-memory-urls-repository'
 import { ExportUrlsService } from './export-urls'
 
-vi.mock('@/lib/r2', () => {
+vi.mock('@/lib/azure-blob', () => {
 	return {
-		uploadToR2: vi.fn(
+		uploadToAzureBlob: vi.fn(
 			async (stream: Readable, _filename: string, _contentType: string) => {
 				for await (const _chunk of stream) {
 					// do nothing

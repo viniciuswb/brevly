@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { stringify } from 'csv-stringify'
 
-import { uploadToR2 } from '@/lib/r2'
+import { uploadToAzureBlob } from '@/lib/azure-blob'
 import type { UrlsRepository } from '@/repositories/urls-repository'
 
 export class ExportUrlsService {
@@ -24,7 +24,7 @@ export class ExportUrlsService {
 		const stream = dbStream.pipe(csvStream)
 		const filename = `export-${Date.now()}-${randomUUID().slice(0, 5)}.csv`
 
-		const { url } = await uploadToR2(stream, filename, 'text/csv')
+		const { url } = await uploadToAzureBlob(stream, filename, 'text/csv')
 
 		return { url }
 	}

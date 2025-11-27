@@ -5,11 +5,8 @@ const envSchema = z.object({
 	NODE_ENV: z.enum(['development', 'production']).default('development'),
 	DATABASE_URL: z.url().startsWith('postgres://'),
 	BASE_SHORT_URL: z.url(),
-	CLOUDFLARE_ACCOUNT_ID: z.string(),
-	CLOUDFLARE_ACCESS_KEY_ID: z.string(),
-	CLOUDFLARE_SECRET_ACCESS_KEY: z.string(),
-	CLOUDFLARE_BUCKET: z.string(),
-	CLOUDFLARE_PUBLIC_URL: z.url(),
+	AZURE_STORAGE_CONNECTION_STRING: z.string(),
+	AZURE_STORAGE_CONTAINER_NAME: z.string(),
 })
 
 const _env = envSchema.safeParse(process.env)
